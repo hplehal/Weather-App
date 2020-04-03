@@ -2,31 +2,44 @@
 const app = {};
 
 app.openWeatherMapkey = `c964b55bb0fa43e474f8774f8c072922`;
-app.googleApiKey = `AIzaSyAotphSu71XilyWpuIqlELH9bqar7oi49Y`;
 
 app.init = function() {
   console.log("ready");
   app.geoFindMe();
+  $("form").on("submit", function(e) {
+    e.preventDefault();
+    app.address = $("#searchTextField").val();
+    console.log(app.address);
+    $("searchTextField").val("");
+
+    geoCode.geocode({ address: app.address }, (results, status) => {
+      if (status === "OK") {
+        let latitude = results[0].geometry.location.lat();
+        let longitude = results[0].geometry.location.lng();
+        console.log("lat", latitude);
+        console.log("lng", longitude);
+
+        app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
+          console.log(res);
+        });
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+  });
+  let geoCode = new google.maps.Geocoder();
+
   let input = document.getElementById("searchTextField");
   let options = {
     types: ["(cities)"]
   };
   let autocomplete = new google.maps.places.Autocomplete(input, options);
+  //   let placeResult = new google.maps.places.PlaceResult()
   let place = autocomplete.getPlace();
+  console.log(place);
 };
-// app.getGoogleApi = () => {
-//   let googleApi = $.ajax({
-//     url: `https://maps.googleapis.com/maps/api/place/autocomplete/js`,
-//     method: "GET",
-//     dataType: "json",
-//     data: {
-//       key: app.googleApiKey,
-//       input: "Toronto"
-//     }
-//   });
-//   return googleApi;
-// };
-app.getOpenWeatherMapApi = (latitude, longitude) => {
+
+app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
   let api = $.ajax({
     url: `http://api.openweathermap.org/data/2.5/forecast`,
     method: "GET",
@@ -39,6 +52,7 @@ app.getOpenWeatherMapApi = (latitude, longitude) => {
   });
   return api;
 };
+
 // geolocation
 app.geoFindMe = function() {
   const $status = $("#status");
@@ -48,7 +62,7 @@ app.geoFindMe = function() {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
 
-    app.getOpenWeatherMapApi(latitude, longitude).then(res => {
+    app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
       console.log(res);
     });
 
