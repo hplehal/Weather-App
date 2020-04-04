@@ -11,25 +11,30 @@
     <title>Project 2</title>
   </head>
   <body>
-    <h1>Weather</h1>
-    <button id="find-me">Show my location</button><br />
-    <p id="status"></p>
-    <a id="map-link" target="_blank"></a>
+    <header>
+      <h1>City Weather</h1>
 
-    <form>
-      <input
-        type="text"
-        id="searchTextField"
-        size="50"
-        placeholder="Search the place"
-      />
-      <input type="submit" value="Search" />
-    </form>
-    <div class="display-weather">
-      <h1 class="cityName"></h1>
-      <div class="weather-icon"></div>
-      <p class="temp"></p>
-    </div>
+      <form>
+        <input
+          type="text"
+          id="searchTextField"
+          size="50"
+          placeholder="Search the place"
+        />
+        <input type="submit" value="Search" />
+      </form>
+      <button id="find-me">Show my location</button>
+    </header>
+    <main>
+      <section class="display-weather">
+        <h3 class="cityName"></h3>
+        <div class="weather-icon"></div>
+        <h4 class="weatherDescription"></h4>
+        <p class="temp"></p>
+      </section>
+      <section class="displayFour"></section>
+    </main>
+
     <!-- load in JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script

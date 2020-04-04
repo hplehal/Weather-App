@@ -52,8 +52,10 @@ app.getGeoCode = () => {
 
       app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
         let getCurrentWeatherObj = res.list[0];
+        console.log(res);
         $(".cityName").text(app.city);
         app.displayCurrWeather(getCurrentWeatherObj);
+        app.displayNextFour(res);
         console.log(app.getCurrentWeatherObj);
       });
     } else {
@@ -61,13 +63,44 @@ app.getGeoCode = () => {
     }
   });
 };
+app.dateToday = () => {
+  let today = new Date();
+  let date = `${today.getFullYear()}-${today.getMonth() +
+    1}-${today.getDate()}`;
+};
+
+app.displayNextFour = res => {
+  $(".displayFour").empty();
+  for (let i = 1; i <= 4; i++) {
+    let currListObj = res.list[i];
+    console.log(currListObj);
+    let dateArr = currListObj.dt_txt.split(" ");
+    let weatherHtml = `
+    <div class="weatherCard">
+        <h3 class="timeHeader">${dateArr[1]}</h3>
+        <i class="wi wi-owm-${currListObj.weather[0].id}"></i>
+        <h4 class="weatherDescription">${
+          currListObj.weather[0].description
+        }</h4>
+        <span class="temp-details">${Math.round(
+          currListObj.main.temp
+        )}&deg C</span>
+    </div>
+    `;
+    $(".displayFour").append(weatherHtml);
+  }
+};
 
 app.displayCurrWeather = list => {
   let iconNum = list.weather[0].id;
   $(".weather-icon").empty();
   $(".temp").empty();
   $(".weather-icon").append(`<i class="wi wi-owm-${iconNum}"></i>`);
-  const weatherTempHtml = `<span>${Math.round(list.main.temp)}&#8451</span>`;
+  console.log(list.weather[0].description);
+  $(".weatherDescription").text(list.weather[0].description);
+  const weatherTempHtml = `<span class="temp-details">${Math.round(
+    list.main.temp
+  )}&deg C</span>`;
   $(".temp").append(weatherTempHtml);
 };
 
@@ -85,6 +118,7 @@ app.geoFindMe = () => {
       let getCurrentWeatherObj = res.list[0];
       $(".cityName").text(getCurrentLocationName);
       app.displayCurrWeather(getCurrentWeatherObj);
+      app.displayNextFour(res);
       //   console.log(app.getCurrentWeatherObj);
     });
   };
