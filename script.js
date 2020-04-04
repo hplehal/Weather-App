@@ -52,6 +52,7 @@ app.getGeoCode = () => {
 
       app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
         let getCurrentWeatherObj = res.list[0];
+        $(".cityName").text(app.city);
         app.displayCurrWeather(getCurrentWeatherObj);
         console.log(app.getCurrentWeatherObj);
       });
@@ -63,7 +64,6 @@ app.getGeoCode = () => {
 
 app.displayCurrWeather = list => {
   let iconNum = list.weather[0].id;
-  $(".cityName").text(app.city);
   $(".weather-icon").empty();
   $(".temp").empty();
   $(".weather-icon").append(`<i class="wi wi-owm-${iconNum}"></i>`);
