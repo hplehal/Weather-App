@@ -1,50 +1,30 @@
 // namespacing
 const app = {};
-
+// Store the Key inside a variable
 app.openWeatherMapkey = `c964b55bb0fa43e474f8774f8c072922`;
-
+// Create an Init Function
 app.init = function() {
   console.log("ready");
-  app.geoFindMe();
+  //   Add the autocomplete functionality
+  app.searchAutoComplete();
+  // activate geolocation when event is initiated
+  $("#find-me").on("click", () => app.geoFindMe());
+
   $("form").on("submit", function(e) {
     e.preventDefault();
-    app.address = $("#searchTextField").val();
-    console.log(app.address);
+    app.city = $("#searchTextField").val();
     $("searchTextField").val("");
-
-    geoCode.geocode({ address: app.address }, (results, status) => {
-      if (status === "OK") {
-        let latitude = results[0].geometry.location.lat();
-        let longitude = results[0].geometry.location.lng();
-        console.log("lat", latitude);
-        console.log("lng", longitude);
-
-        app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
-          console.log(res);
-        });
-      } else {
-        alert("Geocode was not successful for the following reason: " + status);
-      }
-    });
+    app.getGeoCode();
   });
-  let geoCode = new google.maps.Geocoder();
-
-  let input = document.getElementById("searchTextField");
-  let options = {
-    types: ["(cities)"]
-  };
-  let autocomplete = new google.maps.places.Autocomplete(input, options);
-  //   let placeResult = new google.maps.places.PlaceResult()
-  let place = autocomplete.getPlace();
-  console.log(place);
 };
-
+//Creating an ajax call from the OpenWeatherMapAPI and taking in Latitude and Longitude parameters
 app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
   let api = $.ajax({
-    url: `http://api.openweathermap.org/data/2.5/forecast`,
+    url: `https://api.openweathermap.org/data/2.5/forecast`,
     method: "GET",
     dataType: "json",
     data: {
+      units: "metric",
       lat: latitude,
       lon: longitude,
       appid: app.openWeatherMapkey
@@ -53,8 +33,46 @@ app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
   return api;
 };
 
-// geolocation
-app.geoFindMe = function() {
+// Create a method that stores the autocomplete functionality
+app.searchAutoComplete = () => {
+  const input = document.getElementById("searchTextField");
+  const options = {
+    types: ["(cities)"]
+  };
+  new google.maps.places.Autocomplete(input, options);
+};
+
+// create a method that gets the long and lat of the searched city location
+app.getGeoCode = () => {
+  const geoCode = new google.maps.Geocoder();
+  geoCode.geocode({ address: app.city }, (results, status) => {
+    if (status === "OK") {
+      const latitude = results[0].geometry.location.lat();
+      const longitude = results[0].geometry.location.lng();
+
+      app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
+        let getCurrentWeatherObj = res.list[0];
+        app.displayCurrWeather(getCurrentWeatherObj);
+        console.log(app.getCurrentWeatherObj);
+      });
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+};
+
+app.displayCurrWeather = list => {
+  let iconNum = list.weather[0].id;
+  $(".cityName").text(app.city);
+  $(".weather-icon").empty();
+  $(".temp").empty();
+  $(".weather-icon").append(`<i class="wi wi-owm-${iconNum}"></i>`);
+  const weatherTempHtml = `<span>${Math.round(list.main.temp)}&#8451</span>`;
+  $(".temp").append(weatherTempHtml);
+};
+
+// Made a method that take the geolocation of the user
+app.geoFindMe = () => {
   const $status = $("#status");
   const $mapLink = $("#map-link");
 
@@ -63,17 +81,14 @@ app.geoFindMe = function() {
     const longitude = position.coords.longitude;
 
     app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
-      console.log(res);
+      let getCurrentLocationName = res.city.name;
+      let getCurrentWeatherObj = res.list[0];
+      $(".cityName").text(getCurrentLocationName);
+      app.displayCurrWeather(getCurrentWeatherObj);
+      //   console.log(app.getCurrentWeatherObj);
     });
-
-    $status.text("");
-    $mapLink.attr(
-      "href",
-      `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`
-    );
-    $mapLink.text(`Latitude: ${latitude} °, Longitude: ${longitude} °`);
   };
-  const error = function(err) {
+  const error = err => {
     $status.text("Unable to retrieve your Location!");
   };
 
