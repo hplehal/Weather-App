@@ -41,6 +41,7 @@ app.getTimezoneApi = (latitude, longitude) => {
     dataType: "json",
     data: {
       key: "XIG2FLO77EH1",
+      format: "json",
       by: "position",
       lat: latitude,
       lng: longitude
@@ -66,14 +67,9 @@ app.getGeoCode = () => {
       const latitude = results[0].geometry.location.lat();
       const longitude = results[0].geometry.location.lng();
 
-      app
-        .getTimezoneApi(latitude, longitude)
-        .then(res => {
-          console.log(res.status);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      app.getTimezoneApi(latitude, longitude).then(res => {
+        console.log(res);
+      });
 
       app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
         let getCurrentWeatherObj = res.list[0];
@@ -82,6 +78,8 @@ app.getGeoCode = () => {
         app.displayCurrWeather(getCurrentWeatherObj);
         app.displayNextFour(res);
       });
+      $("#forecast").css("display", "flex");
+      app.smoothScroll();
     } else {
       alert("Geocode was not successful for the following reason: " + status);
     }
@@ -101,7 +99,7 @@ app.displayNextFour = res => {
     let weatherHtml = `
     <div class="weatherCard">
         <h3 class="timeHeader">${app.checkTime(dateArr[1])}</h3>
-        <i class="wi wi-owm-${currListObj.weather[0].id}"></i>
+        <i class="wi wi-owm-${app.dayOrNight}-${currListObj.weather[0].id}"></i>
         <h4 class="weatherDescription">${
           currListObj.weather[0].description
         }</h4>
@@ -116,29 +114,41 @@ app.displayNextFour = res => {
 
 app.checkTime = time => {
   if (time.includes("3:")) {
+    app.dayOrNight = "night";
     return "3 AM";
   } else if (time.includes("6:")) {
+    app.dayOrNight = "day";
     return "6 AM";
   } else if (time.includes("9:")) {
+    app.dayOrNight = "day";
     return "9 AM";
   } else if (time.includes("12:")) {
+    app.dayOrNight = "day";
     return "12 NOON";
   } else if (time.includes("15:")) {
+    app.dayOrNight = "day";
     return "3 PM";
   } else if (time.includes("18:")) {
+    app.dayOrNight = "day";
     return "6 PM";
   } else if (time.includes("21:")) {
+    app.dayOrNight = "night";
     return "9 PM";
   } else if (time.includes("00:")) {
+    app.dayOrNight = "night";
     return "MIDNIGHT";
   }
 };
 
 app.displayCurrWeather = list => {
   let iconNum = list.weather[0].id;
+  let dateArr = list.dt_txt.split(" ");
+  app.checkTime(dateArr[1]);
   $(".weather-icon").empty();
   $(".temp").empty();
-  $(".weather-icon").append(`<i class="wi wi-owm-${iconNum}"></i>`);
+  $(".weather-icon").append(
+    `<i class="wi wi-owm-${app.dayOrNight}-${iconNum}"></i>`
+  );
   console.log(list.weather[0].description);
   $(".weatherDescription").text(list.weather[0].description);
   const weatherTempHtml = `<span class="temp-details">${Math.round(
@@ -146,7 +156,14 @@ app.displayCurrWeather = list => {
   )}&deg C</span>`;
   $(".temp").append(weatherTempHtml);
 };
-
+app.smoothScroll = () => {
+  $("html").animate(
+    {
+      scrollTop: $("#forecast").offset().top
+    },
+    1500
+  );
+};
 // Made a method that take the geolocation of the user
 app.geoFindMe = () => {
   const $status = $("#status");
@@ -168,6 +185,8 @@ app.geoFindMe = () => {
       app.displayNextFour(res);
       //   console.log(app.getCurrentWeatherObj);
     });
+    $("#forecast").css("display", "flex");
+    app.smoothScroll();
   };
   const error = err => {
     $status.text("Unable to retrieve your Location!");
