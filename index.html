@@ -13,7 +13,7 @@
   <body>
     <header id="searchSection">
       <h1>City Weather</h1>
-      <a href="#forecast" id="findMe">Find Me!</a>
+      <a id="findMe">Find Me!</a>
       <p class="or">or</p>
       <form>
         <input
@@ -27,6 +27,9 @@
     </header>
     <main id="forecast">
       <section class="display-weather">
+        <a href="#searchSection" class="backToSearch"
+          ><i class="fas fa-arrow-up"></i
+        ></a>
         <h3 class="cityName"></h3>
         <div class="weather-icon"></div>
         <h4 class="weatherDescription"></h4>
@@ -34,7 +37,11 @@
       </section>
       <section class="displayFour"></section>
     </main>
-
+    <!-- load in font awesome -->
+    <script
+      src="https://kit.fontawesome.com/ce1aa3e8a3.js"
+      crossorigin="anonymous"
+    ></script>
     <!-- load in JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script

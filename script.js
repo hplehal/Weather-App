@@ -34,6 +34,7 @@ app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
   return api;
 };
 
+// Get the Timezone Api using ajax and have param of latitude and longitude
 app.getTimezoneApi = (latitude, longitude) => {
   let timeZoneApi = $.ajax({
     url: `http://api.timezonedb.com/v2.1/get-time-zone`,
@@ -85,12 +86,15 @@ app.getGeoCode = () => {
     }
   });
 };
-app.dateToday = () => {
-  let today = new Date();
-  let date = `${today.getFullYear()}-${today.getMonth() +
-    1}-${today.getDate()}`;
-};
+// find the date today for 5 day forecast if have time
+// app.dateToday = () => {
+//   let today = new Date();
+//   let date = `${today.getFullYear()}-${today.getMonth() +
+//     1}-${today.getDate()}`;
+//   return date;
+// };
 
+// display the next 4 forecast in a 3 hour span
 app.displayNextFour = res => {
   $(".displayFour").empty();
   for (let i = 1; i <= 4; i++) {
@@ -112,6 +116,7 @@ app.displayNextFour = res => {
   }
 };
 
+// Check time and format it better and add day and night string for the css
 app.checkTime = time => {
   if (time.includes("3:")) {
     app.dayOrNight = "night";
@@ -140,6 +145,7 @@ app.checkTime = time => {
   }
 };
 
+// display the current Weather
 app.displayCurrWeather = list => {
   let iconNum = list.weather[0].id;
   let dateArr = list.dt_txt.split(" ");
@@ -156,6 +162,8 @@ app.displayCurrWeather = list => {
   )}&deg C</span>`;
   $(".temp").append(weatherTempHtml);
 };
+
+// Used jquery animate to move the page to the forecast when the city is searched
 app.smoothScroll = () => {
   $("html").animate(
     {
@@ -192,6 +200,7 @@ app.geoFindMe = () => {
     $status.text("Unable to retrieve your Location!");
   };
 
+  //   Checker!
   if (!navigator.geolocation) {
     $status.text("Geolocation is not supported by your browser!");
   } else {
