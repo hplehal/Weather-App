@@ -8,6 +8,15 @@
 
 html {
   font-size: 62.5%;
+  height: 100%;
+  background: radial-gradient(
+    circle at 30% 107%,
+    #fdf497 0%,
+    #fdf497 5%,
+    #fd5949 45%,
+    #d6249f 60%,
+    #285aeb 90%
+  );
 }
 body {
   font-family: "Oswald", sans-serif;
@@ -23,6 +32,31 @@ h1 {
 }
 input[type="submit"] {
   display: none;
+}
+#findMe {
+  font-size: 3rem;
+  width: 20%;
+  height: 25%;
+  background-color: transparent;
+  border: 5px solid #000000;
+}
+
+#findMe:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+.or {
+  font-size: 3rem;
+  padding: 15px;
+}
+#searchTextField {
+  display: block;
+  margin: 10px auto;
+  height: 30%;
+  font-size: 3rem;
+  width: 50%;
+  border: 5px solid #000000;
+  text-align: center;
 }
 .display-weather {
   margin: 30px auto;

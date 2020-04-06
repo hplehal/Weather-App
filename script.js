@@ -2,13 +2,14 @@
 const app = {};
 // Store the Key inside a variable
 app.openWeatherMapkey = `c964b55bb0fa43e474f8774f8c072922`;
+app.timeZoneDbKey = ``;
 // Create an Init Function
 app.init = function() {
   console.log("ready");
   //   Add the autocomplete functionality
   app.searchAutoComplete();
   // activate geolocation when event is initiated
-  $("#find-me").on("click", () => app.geoFindMe());
+  $("#findMe").on("click", () => app.geoFindMe());
 
   $("form").on("submit", function(e) {
     e.preventDefault();
@@ -33,6 +34,21 @@ app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
   return api;
 };
 
+app.getTimezoneApi = (latitude, longitude) => {
+  let timeZoneApi = $.ajax({
+    url: `http://api.timezonedb.com/v2.1/get-time-zone`,
+    method: "GET",
+    dataType: "json",
+    data: {
+      key: "XIG2FLO77EH1",
+      by: "position",
+      lat: latitude,
+      lng: longitude
+    }
+  });
+  return timeZoneApi;
+};
+
 // Create a method that stores the autocomplete functionality
 app.searchAutoComplete = () => {
   const input = document.getElementById("searchTextField");
@@ -50,13 +66,21 @@ app.getGeoCode = () => {
       const latitude = results[0].geometry.location.lat();
       const longitude = results[0].geometry.location.lng();
 
+      app
+        .getTimezoneApi(latitude, longitude)
+        .then(res => {
+          console.log(res.status);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
       app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
         let getCurrentWeatherObj = res.list[0];
         console.log(res);
         $(".cityName").text(app.city);
         app.displayCurrWeather(getCurrentWeatherObj);
         app.displayNextFour(res);
-        console.log(app.getCurrentWeatherObj);
       });
     } else {
       alert("Geocode was not successful for the following reason: " + status);
@@ -73,11 +97,10 @@ app.displayNextFour = res => {
   $(".displayFour").empty();
   for (let i = 1; i <= 4; i++) {
     let currListObj = res.list[i];
-    console.log(currListObj);
     let dateArr = currListObj.dt_txt.split(" ");
     let weatherHtml = `
     <div class="weatherCard">
-        <h3 class="timeHeader">${dateArr[1]}</h3>
+        <h3 class="timeHeader">${app.checkTime(dateArr[1])}</h3>
         <i class="wi wi-owm-${currListObj.weather[0].id}"></i>
         <h4 class="weatherDescription">${
           currListObj.weather[0].description
@@ -88,6 +111,26 @@ app.displayNextFour = res => {
     </div>
     `;
     $(".displayFour").append(weatherHtml);
+  }
+};
+
+app.checkTime = time => {
+  if (time.includes("3:")) {
+    return "3 AM";
+  } else if (time.includes("6:")) {
+    return "6 AM";
+  } else if (time.includes("9:")) {
+    return "9 AM";
+  } else if (time.includes("12:")) {
+    return "12 NOON";
+  } else if (time.includes("15:")) {
+    return "3 PM";
+  } else if (time.includes("18:")) {
+    return "6 PM";
+  } else if (time.includes("21:")) {
+    return "9 PM";
+  } else if (time.includes("00:")) {
+    return "MIDNIGHT";
   }
 };
 
@@ -112,6 +155,10 @@ app.geoFindMe = () => {
   const success = function(position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
+
+    app.getTimezoneApi(latitude, longitude).then(res => {
+      console.log(res);
+    });
 
     app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
       let getCurrentLocationName = res.city.name;
