@@ -43,7 +43,6 @@ input[type="submit"] {
 .backToSearch {
   position: absolute;
   font-size: 3rem;
-  top: 870px;
   left: 30px;
   border-radius: 30%;
   width: 50px;

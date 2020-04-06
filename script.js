@@ -35,6 +35,7 @@ app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
 };
 
 // Get the Timezone Api using ajax and have param of latitude and longitude
+// This is an add on I can do to fix the time that is given in the openWeatherMap API
 app.getTimezoneApi = (latitude, longitude) => {
   let timeZoneApi = $.ajax({
     url: `http://api.timezonedb.com/v2.1/get-time-zone`,
