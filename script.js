@@ -36,21 +36,21 @@ app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
 
 // Get the Timezone Api using ajax and have param of latitude and longitude
 // This is an add on I can do to fix the time that is given in the openWeatherMap API
-app.getTimezoneApi = (latitude, longitude) => {
-  let timeZoneApi = $.ajax({
-    url: `http://api.timezonedb.com/v2.1/get-time-zone`,
-    method: "GET",
-    dataType: "json",
-    data: {
-      key: "XIG2FLO77EH1",
-      format: "json",
-      by: "position",
-      lat: latitude,
-      lng: longitude
-    }
-  });
-  return timeZoneApi;
-};
+// app.getTimezoneApi = (latitude, longitude) => {
+//   let timeZoneApi = $.ajax({
+//     url: `http://api.timezonedb.com/v2.1/get-time-zone`,
+//     method: "GET",
+//     dataType: "json",
+//     data: {
+//       key: "XIG2FLO77EH1",
+//       format: "json",
+//       by: "position",
+//       lat: latitude,
+//       lng: longitude
+//     }
+//   });
+//   return timeZoneApi;
+// };
 
 // Create a method that stores the autocomplete functionality
 app.searchAutoComplete = () => {
@@ -87,7 +87,7 @@ app.getGeoCode = () => {
     }
   });
 };
-// find the date today for 5 day forecast if have time
+// find the date today for 5 day forecast
 // app.dateToday = () => {
 //   let today = new Date();
 //   let date = `${today.getFullYear()}-${today.getMonth() +
@@ -211,3 +211,11 @@ app.geoFindMe = () => {
 };
 
 $(document).ready(app.init());
+
+// Few Things I can add as an on going project for this app is to:
+
+// 1. add the time of the specific city it is searching for.
+// 2. add a 5 day forecast
+// 3. change the background to how the weather is.
+
+// any suggestions on how I can add those three would be nice 😁😁🦄🧞
