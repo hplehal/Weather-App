@@ -4,14 +4,14 @@ const app = {};
 app.openWeatherMapkey = `c964b55bb0fa43e474f8774f8c072922`;
 app.timeZoneDbKey = ``;
 // Create an Init Function
-app.init = function() {
+app.init = function () {
   console.log("ready");
   //   Add the autocomplete functionality
   app.searchAutoComplete();
   // activate geolocation when event is initiated
   $("#findMe").on("click", () => app.geoFindMe());
 
-  $("form").on("submit", function(e) {
+  $("form").on("submit", function (e) {
     e.preventDefault();
     app.city = $("#searchTextField").val();
     $("searchTextField").val("");
@@ -28,35 +28,35 @@ app.getOpenWeatherMapApiWithLngLat = (latitude, longitude) => {
       units: "metric",
       lat: latitude,
       lon: longitude,
-      appid: app.openWeatherMapkey
-    }
+      appid: app.openWeatherMapkey,
+    },
   });
   return api;
 };
 
 // Get the Timezone Api using ajax and have param of latitude and longitude
 // This is an add on I can do to fix the time that is given in the openWeatherMap API
-// app.getTimezoneApi = (latitude, longitude) => {
-//   let timeZoneApi = $.ajax({
-//     url: `http://api.timezonedb.com/v2.1/get-time-zone`,
-//     method: "GET",
-//     dataType: "json",
-//     data: {
-//       key: "XIG2FLO77EH1",
-//       format: "json",
-//       by: "position",
-//       lat: latitude,
-//       lng: longitude
-//     }
-//   });
-//   return timeZoneApi;
-// };
+app.getTimezoneApi = (latitude, longitude) => {
+  let timeZoneApi = $.ajax({
+    url: `http://api.timezonedb.com/v2.1/get-time-zone`,
+    method: "GET",
+    dataType: "json",
+    data: {
+      key: "XIG2FLO77EH1",
+      format: "json",
+      by: "position",
+      lat: latitude,
+      lng: longitude,
+    },
+  });
+  return timeZoneApi;
+};
 
 // Create a method that stores the autocomplete functionality
 app.searchAutoComplete = () => {
   const input = document.getElementById("searchTextField");
   const options = {
-    types: ["(cities)"]
+    types: ["(cities)"],
   };
   new google.maps.places.Autocomplete(input, options);
 };
@@ -69,11 +69,11 @@ app.getGeoCode = () => {
       const latitude = results[0].geometry.location.lat();
       const longitude = results[0].geometry.location.lng();
 
-      app.getTimezoneApi(latitude, longitude).then(res => {
+      app.getTimezoneApi(latitude, longitude).then((res) => {
         console.log(res);
       });
 
-      app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
+      app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then((res) => {
         let getCurrentWeatherObj = res.list[0];
         console.log(res);
         $(".cityName").text(app.city);
@@ -96,7 +96,7 @@ app.getGeoCode = () => {
 // };
 
 // display the next 4 forecast in a 3 hour span
-app.displayNextFour = res => {
+app.displayNextFour = (res) => {
   $(".displayFour").empty();
   for (let i = 1; i <= 4; i++) {
     let currListObj = res.list[i];
@@ -118,7 +118,7 @@ app.displayNextFour = res => {
 };
 
 // Check time and format it better and add day and night string for the css
-app.checkTime = time => {
+app.checkTime = (time) => {
   if (time.includes("3:")) {
     app.dayOrNight = "night";
     return "3 AM";
@@ -147,7 +147,7 @@ app.checkTime = time => {
 };
 
 // display the current Weather
-app.displayCurrWeather = list => {
+app.displayCurrWeather = (list) => {
   let iconNum = list.weather[0].id;
   let dateArr = list.dt_txt.split(" ");
   app.checkTime(dateArr[1]);
@@ -168,7 +168,7 @@ app.displayCurrWeather = list => {
 app.smoothScroll = () => {
   $("html").animate(
     {
-      scrollTop: $("#forecast").offset().top
+      scrollTop: $("#forecast").offset().top,
     },
     1500
   );
@@ -178,15 +178,15 @@ app.geoFindMe = () => {
   const $status = $("#status");
   const $mapLink = $("#map-link");
 
-  const success = function(position) {
+  const success = function (position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
 
-    app.getTimezoneApi(latitude, longitude).then(res => {
+    app.getTimezoneApi(latitude, longitude).then((res) => {
       console.log(res);
     });
 
-    app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then(res => {
+    app.getOpenWeatherMapApiWithLngLat(latitude, longitude).then((res) => {
       let getCurrentLocationName = res.city.name;
       let getCurrentWeatherObj = res.list[0];
       $(".cityName").text(getCurrentLocationName);
@@ -197,7 +197,7 @@ app.geoFindMe = () => {
     $("#forecast").css("display", "flex");
     app.smoothScroll();
   };
-  const error = err => {
+  const error = (err) => {
     $status.text("Unable to retrieve your Location!");
   };
 
